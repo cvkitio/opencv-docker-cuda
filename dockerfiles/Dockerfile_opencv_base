@@ -43,7 +43,7 @@ RUN mkdir /opencv_build && cd /opencv_build && \
     git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv.git && \
     git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv_contrib.git && \
     cd opencv && mkdir build && cd build && \
-    && . /opt/python3_env.sh && \
+    . /opt/python3_env.sh && \
     cmake -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX=/usr/local \
           -D OPENCV_EXTRA_MODULES_PATH=/opencv_build/opencv_contrib/modules \
