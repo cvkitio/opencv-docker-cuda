@@ -23,6 +23,7 @@ See https://developer.nvidia.com/cuda-gpus for further details
 ffmpeg
 * base off the work here and include with opencv, may be possible to use a docker layer
 
+* Builds for a ubuntu 24.04 image
 * TODO Additional linux distros
 
 TODO - update this automatically from build scripts

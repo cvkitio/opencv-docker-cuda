@@ -25,14 +25,14 @@ RUN apt-get install python3-pip python3.12-venv python3-dev -y
 RUN rm /usr/bin/gcc
 RUN ln -s /usr/bin/gcc-12 /usr/bin/gcc
 
-# So this all does nothing as
-#RUN git clone --depth 1 https://github.com/opencv/opencv
-#RUN git clone --depth 1 https://github.com/opencv/opencv_contrib
-#RUN cd opencv
-#RUN python3 -m venv .venv
-#RUN . .venv/bin/activate && \
-#    .venv/bin/pip install setuptools
-#RUN mkdir build && cd build
+# Do some Dockerfile trickery to get dynamic env vars for Python
+RUN echo 'export PYTHON3_LIBRARY='$( \
+    python3 -c "from distutils.sysconfig import get_config_var;from os.path import dirname,join; print(join(dirname(get_config_var('LIBPC')),get_config_var('LDLIBRARY')))" \
+) > /opt/python3_env.sh
+RUN echo 'export PYTHON3_INCLUDE_DIR='$( \
+    python3 -c "from distutils.sysconfig import get_python_inc;print(get_python_inc())" \
+) >> /opt/python3_env.sh
+RUN echo 'export PYTHON3_EXECUTABLE='$(which python3) >> /opt/python3_env.sh
 
 # Note had issues building with 4.8.1, so using 4.11.0 need to check what the issues were, likely some version mismatch with opencv-python
 ENV OPENCV_VERSION=4.11.0
@@ -43,6 +43,7 @@ RUN mkdir /opencv_build && cd /opencv_build && \
     git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv.git && \
     git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv_contrib.git && \
     cd opencv && mkdir build && cd build && \
+    && . /opt/python3_env.sh && \
     cmake -D CMAKE_BUILD_TYPE=Release \
           -D CMAKE_INSTALL_PREFIX=/usr/local \
           -D OPENCV_EXTRA_MODULES_PATH=/opencv_build/opencv_contrib/modules \
@@ -62,5 +63,8 @@ RUN mkdir /opencv_build && cd /opencv_build && \
           -D WITH_QT=OFF \
           -D WITH_OPENGL=ON \
           -D BUILD_opencv_python3=ON \
+          -D PYTHON3_EXECUTABLE=$BUILD_PYTHON \
+          -D PYTHON3_INCLUDE_DIR=$PYTHON3_INCLUDE_DIR \
+          -D PYTHON3_LIBRARY=$PYTHON3_LIBRARY \
           .. && \
     make -j"$(nproc)" && make install && ldconfig
