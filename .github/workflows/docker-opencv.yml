@@ -25,9 +25,9 @@ jobs:
           context: .
           file: dockerfiles/Dockerfile_opencv_base
           push: true
-          tags:
+          tags: |
             ajsinclair/opencv-base:latest
-            ajsinclair/opencv-base:nvidia-cuda7.5
+            ajsinclair/opencv-base:nvidia-cuda-7.5
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -52,8 +52,8 @@ jobs:
           context: .
           file: dockerfiles/Dockerfile_opencv_python
           push: true
-          tags:
+          tags: |
             ajsinclair/opencv-python:latest
-            ajsinclair/opencv-python:nvidia-cuda7.5
+            ajsinclair/opencv-python:nvidia-cuda-7.5
           cache-from: type=gha
           cache-to: type=gha,mode=max
