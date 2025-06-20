@@ -8,7 +8,19 @@ opencv
 * 4.11.0
 
 nvidia hardware
+See https://developer.nvidia.com/cuda-gpus for further details
+
 * T4 (Ampere) ARCH 7.5
+* TODO 
+    * 8.0
+    * 8.6
+    * 8.7 (Orin / Jetson)
+    * 8.9 
+
+ffmpeg
+* soon
+
+TODO - update this automatically from build scripts
 
 ## Prequisites
 
@@ -18,3 +30,15 @@ Test - Nvidia GPU instance
 
 ## Images are published to DockerHub
 
+https://hub.docker.com/r/ajsinclair/opencv-base
+
+To use:
+
+`docker pull ajsinclair/opencv-base`
+
+## Build notes
+
+* Base opencv CUDA build options
+* Extended features such as cuDNN
+* Building the python modules and linking
+* Compiling ffmpeg with cuda support for use (do this in a separate repo)

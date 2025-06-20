@@ -1,0 +1,49 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build-base:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push opencv-base
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: dockerfiles/Dockerfile_opencv_base
+          push: true
+          tags: |
+            ajsinclair/opencv-base:latest
+            ajsinclair/opencv-base:nvidia-cuda7.5
+
+  build-app:
+    needs: build-base
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push opencv-python
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: dockerfiles/Dockerfile_opencv_python
+          push: true
+          tags: 
+            ajsinclair/opencv-python:latest
+            ajsinclair/opencv-python:nvidia-cuda7.5
