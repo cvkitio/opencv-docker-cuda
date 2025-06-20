@@ -1,0 +1,36 @@
+FROM ajsinclair/opencv-base:latest
+
+WORKDIR /opt
+RUN git clone --depth 1 https://github.com/opencv/opencv-python.git
+
+ENV ENABLE_CONTRIB=1
+# TODO use $(nproc) to get the number of CPU cores
+ENV CMAKE_BUILD_PARALLEL_LEVEL="4"
+
+# Install numpy and scikit-build
+RUN cd /opt/opencv-python && python3 -m venv .venv && . .venv/bin/activate && pip install numpy scikit-build
+
+# Link numpy headers for build
+RUN ln -s /opt/opencv-python/.venv/lib/python3.12/site-packages/numpy/core/include/numpy/ /usr/include/numpy
+
+# Set CMake args for CUDA build
+ENV CMAKE_ARGS="\
+    -DWITH_CUDA=ON \
+    -DOPENCV_DNN_CUDA=ON \
+    -DCUDA_ARCH_BIN=7.5 \
+    -DCUDA_ARCH_PTX=7.5 \
+    -DENABLE_FAST_MATH=1 \
+    -DWITH_CUBLAS=1 \
+    -DWITH_V4L=ON \
+    -DWITH_FFMPEG=OFF \
+    -DBUILD_EXAMPLES=OFF \
+    -DBUILD_DOCS=OFF \
+    -DBUILD_PERF_TESTS=OFF \
+    -DBUILD_TESTS=OFF \
+    -DOPENCV_EXTRA_MODULES_PATH=/opencv_build/opencv_contrib/modules"
+
+# Build the wheel
+RUN cd /opt/opencv-python && . .venv/bin/activate && pip wheel . -w /opt/wheels
+
+
+ENTRYPOINT [ "/bin/bash" ]

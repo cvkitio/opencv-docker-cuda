@@ -1,0 +1,66 @@
+# syntax=docker/dockerfile:1
+FROM ubuntu:24.04 AS devel
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential curl unzip git \
+    software-properties-common \
+    python3.12 python3.12-venv python3.12-dev \
+    libffi-dev libssl-dev libbz2-dev liblzma-dev zlib1g-dev \
+    libncurses5-dev libgdbm-dev libsqlite3-dev tk-dev \
+    cmake ninja-build
+
+WORKDIR /opt
+RUN apt-key del 7fa2af80
+RUN curl https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-keyring_1.1-1_all.deb > cuda-keyring_1.1-1_all.deb
+RUN dpkg -i cuda-keyring_1.1-1_all.deb && rm cuda-keyring_1.1-1_all.deb
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends nvidia-cuda-toolkit
+# TODO collapse with above
+RUN apt-get install -y nvidia-cudnn cuda-drivers
+
+RUN apt-get install -y cmake g++ wget unzip ninja-build git software-properties-common curl
+
+RUN apt-get install python3-pip python3.12-venv python3-dev -y
+
+RUN rm /usr/bin/gcc
+RUN ln -s /usr/bin/gcc-12 /usr/bin/gcc
+
+# So this all does nothing as
+#RUN git clone --depth 1 https://github.com/opencv/opencv
+#RUN git clone --depth 1 https://github.com/opencv/opencv_contrib
+#RUN cd opencv
+#RUN python3 -m venv .venv
+#RUN . .venv/bin/activate && \
+#    .venv/bin/pip install setuptools
+#RUN mkdir build && cd build
+
+# Note had issues building with 4.8.1, so using 4.11.0 need to check what the issues were, likely some version mismatch with opencv-python
+ENV OPENCV_VERSION=4.11.0
+# Set this for the target hardware https://developer.nvidia.com/cuda-gpus
+ENV CUDA_ARCH=7.5
+
+RUN mkdir /opencv_build && cd /opencv_build && \
+    git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv.git && \
+    git clone --depth 1 --branch ${OPENCV_VERSION} https://github.com/opencv/opencv_contrib.git && \
+    cd opencv && mkdir build && cd build && \
+    cmake -D CMAKE_BUILD_TYPE=Release \
+          -D CMAKE_INSTALL_PREFIX=/usr/local \
+          -D OPENCV_EXTRA_MODULES_PATH=/opencv_build/opencv_contrib/modules \
+          -D BUILD_EXAMPLES=OFF \
+          -D BUILD_DOCS=OFF \
+          -D BUILD_TESTS=OFF \
+          -D BUILD_PERF_TESTS=OFF \
+          -D WITH_CUDA=ON \
+          -D WITH_CUDNN=ON \
+          -D OPENCV_DNN_CUDA=OFF \
+          -D ENABLE_FAST_MATH=1 \
+          -D CUDA_FAST_MATH=1 \
+          -D CUDA_ARCH_BIN=${CUDA_ARCH} \
+          -D WITH_CUBLAS=1 \
+          -D WITH_TBB=ON \
+          -D WITH_V4L=ON \
+          -D WITH_QT=OFF \
+          -D WITH_OPENGL=ON \
+          -D BUILD_opencv_python3=ON \
+          .. && \
+    make -j"$(nproc)" && make install && ldconfig
