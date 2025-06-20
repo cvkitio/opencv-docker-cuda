@@ -15,10 +15,15 @@ See https://developer.nvidia.com/cuda-gpus for further details
     * 8.0
     * 8.6
     * 8.7 (Orin / Jetson)
-    * 8.9 
+    * 8.9
+    * 9.0
+    * 10.0
+    * 12.0 
 
 ffmpeg
-* soon
+* base off the work here and include with opencv, may be possible to use a docker layer
+
+* TODO Additional linux distros
 
 TODO - update this automatically from build scripts
 
