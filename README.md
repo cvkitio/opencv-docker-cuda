@@ -25,6 +25,7 @@ ffmpeg
 
 * Builds for a ubuntu 24.04 image
 * TODO Additional linux distros
+* TODO push python wheel
 
 TODO - update this automatically from build scripts
 
@@ -41,6 +42,10 @@ https://hub.docker.com/r/ajsinclair/opencv-base
 To use:
 
 `docker pull ajsinclair/opencv-base`
+
+Then to run:
+
+`docker run --gpus all --device /dev/nvidia0:/dev/nvidia0 --device /dev/nvidiactl:/dev/nvidiactl --device /dev/nvidia-uvm:/dev/nvidia-uvm --device /dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools -it ajsinclair/opencv-base`
 
 ## Build notes
 

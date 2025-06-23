@@ -1,0 +1,21 @@
+FROM ajsinclair/opencv-python:latest
+
+# Install test dependencies
+COPY test/requirements-test.txt /tmp/requirements-test.txt
+RUN pip install -r /tmp/requirements-test.txt
+
+# Copy test files
+COPY test/test_gpu_refactored.py /test/test_gpu_refactored.py
+COPY test/timing_decorator.py /test/timing_decorator.py
+COPY test/pytest.ini /test/pytest.ini
+COPY test/run_tests.sh /test/run_tests.sh
+COPY test/README.md /test/README.md
+
+# Make test script executable
+RUN chmod +x /test/run_tests.sh
+
+# Set working directory
+WORKDIR /test
+
+# Set entrypoint to run the refactored tests
+ENTRYPOINT ["./run_tests.sh"]
