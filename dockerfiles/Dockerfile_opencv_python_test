@@ -2,7 +2,7 @@ FROM ajsinclair/opencv-python:latest
 
 # Install test dependencies
 COPY test/requirements-test.txt /tmp/requirements-test.txt
-RUN pip install -r /tmp/requirements-test.txt
+RUN pip install --break-system-packages -r /tmp/requirements-test.txt
 
 # Copy test files
 COPY test/test_gpu_refactored.py /test/test_gpu_refactored.py

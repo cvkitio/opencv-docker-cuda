@@ -82,6 +82,40 @@ Tests automatically skip when:
 - `test_report.json` - Detailed pytest results in JSON format
 - `test_timings.json` - Historical timing data for all test runs
 
+## RunPod Deployment
+
+### Cloud Testing with RunPod
+
+The `deploy_runpod.py` script allows you to deploy and test the GPU functionality on RunPod cloud infrastructure:
+
+```bash
+# Install deployment dependencies
+pip install -r requirements-deploy.txt
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your RunPod API key
+
+# Deploy and run tests
+python deploy_runpod.py
+```
+
+### Environment Variables
+
+- `RUNPOD_API_KEY` - Your RunPod API key (required)
+- `RUNPOD_GPU_TYPE` - GPU type to use (default: "NVIDIA GeForce RTX 3080 Ti")
+- `TEMPLATE_NAME` - Name for the Docker template (default: "opencv-cuda-test")
+- `ENDPOINT_NAME` - Name for the endpoint (default: "opencv-test-endpoint")
+
+### What the Script Does
+
+1. Creates a RunPod template using `ajsinclair/opencv-python-test:latest`
+2. Deploys an endpoint with GPU support
+3. Waits for the endpoint to be ready
+4. Runs the complete test suite
+5. Retrieves and displays results
+6. Cleans up resources automatically
+
 ## Legacy Tests
 
 The original monolithic test script is preserved as `test_gpu.py` for reference.

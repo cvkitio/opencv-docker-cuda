@@ -1,0 +1,1 @@
+docker buildx build --platform linux/amd64 -f dockerfiles/Dockerfile_opencv_python_test -t ajsinclair/opencv-python-test:latest --load .

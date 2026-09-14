@@ -1,0 +1,9 @@
+
+# --- Credential guards. Never commit these. ---
+.env
+.env.local
+*.pem
+*.key
+credentials
+*-adminsdk-*.json
+.DS_Store
